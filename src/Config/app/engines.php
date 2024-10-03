@@ -8,7 +8,7 @@ return [
         if (class_exists('Jenssegers\Blade\Blade')) {
             try {
                 // Define cache and instantiate Blade
-                $cache = PROJECT_ROOT . '/storage/framework/views';
+                $cache = dirname(__DIR__, 6) . '/storage/framework/views';
                 $blade = new \Jenssegers\Blade\Blade($views, $cache);
 
                 // Render and output the Blade view
