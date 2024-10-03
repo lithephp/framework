@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.1] - Updated Blade Cache Directory Path
+
+- **Description**: This version updates the Blade view rendering function to change the cache directory path initialization from using `PROJECT_ROOT` to `dirname(__DIR__, 6)`. This adjustment enhances the flexibility and maintainability of the cache directory structure while ensuring compatibility with the project’s directory layout.
+
+
 ## [1.0.0] - Initial Release
 
 - **Description**: Lithe is a PHP framework inspired by Express.js, renowned for its lightweight and flexible nature. It offers a minimalist approach to web development, integrating various components, ORMs, and databases while maintaining agile and efficient performance.
