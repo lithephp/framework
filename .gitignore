@@ -1,0 +1,21 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/vendor
+
+# PHPStorm
+.idea
+
+# Composer
+composer.phar
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore local configuration files
+.env
+.phpunit.result.cache
+
+# Lithe modules
+.lithe_modules/

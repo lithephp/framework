@@ -1,0 +1,39 @@
+{
+    "name": "lithephp/framework",
+    "description": "Lithe is a flexible and efficient PHP framework for creating robust web applications that adapt to developers' needs.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "William Humbwavali",
+            "homepage": "https://instagram.com/redeedite"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Lithe\\": "src/"
+        },
+        "files": [
+            "src/Orbis/Http/Router.php"
+        ]
+    },
+    "require": {
+        "php": "^8.2",
+        "symfony/console": "^5.0",
+        "lithemod/log": "^1.0",
+        "lithemod/flow": "^1.0",
+        "lithemod/import": "^1.0",
+        "lithemod/env": "^1.0",
+        "lithemod/validator": "^1.0",
+        "lithemod/upload": "^1.0",
+        "lithemod/orbis": "^1.0",
+        "lithemod/httpexception": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "11.2",
+        "mockery/mockery": "^1.6"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
+}
