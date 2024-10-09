@@ -1,9 +1,15 @@
 # Changelog
 
+## [1.0.2] - Refactor Router File Handling to be Case-Insensitive
+
+- **Description**: This version refactors the router's file handling to be case-insensitive, improving consistency and reliability when dealing with file paths.
+- **Changes**:
+  - Modified the method for obtaining the file path in the router to ensure case-insensitive handling.
+  - Updated the router registration in Orbis to ensure key comparison is case-insensitive.
+
 ## [1.0.1] - Updated Blade Cache Directory Path
 
 - **Description**: This version updates the Blade view rendering function to change the cache directory path initialization from using `PROJECT_ROOT` to `dirname(__DIR__, 6)`. This adjustment enhances the flexibility and maintainability of the cache directory structure while ensuring compatibility with the project’s directory layout.
-
 
 ## [1.0.0] - Initial Release
 
