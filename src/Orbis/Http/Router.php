@@ -19,7 +19,7 @@ function get(string $path, callable|array ...$handler): void
     $callingFile = $caller['file']; // Get the full path of the calling file
 
     // Use the full path as the key
-    $key = $callingFile; // The full path of the file
+    $key = strtolower($callingFile); // The full path of the file
 
     $router = Orbis::instance($key);
 
@@ -42,7 +42,7 @@ function post(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -65,7 +65,7 @@ function put(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -88,7 +88,7 @@ function delete(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -111,7 +111,7 @@ function patch(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -134,7 +134,7 @@ function options(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -157,7 +157,7 @@ function head(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -180,7 +180,7 @@ function any(string $path, callable|array ...$handler): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -199,7 +199,7 @@ function any(string $path, callable|array ...$handler): void
  */
 function router(string $path): \Lithe\Http\Router
 {
-    $key = str_replace('/', "\\", $path) . '.php';
+    $key = strtolower(str_replace('/', "\\", $path) . '.php');
     // Check if the file exists
     if (!file_exists($key)) {
         throw new \Exception("Router configuration file not found: {$path}");
@@ -225,7 +225,7 @@ function apply(string|callable|Router|array ...$middleware): void
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
@@ -248,7 +248,7 @@ function route(string $path): object
     $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
     $callingFile = $caller['file'];
 
-    $key = $callingFile;
+    $key = strtolower($callingFile);
 
     $router = Orbis::instance($key);
 
