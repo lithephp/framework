@@ -680,49 +680,4 @@ class App extends \Lithe\Http\Router
         }
         return (string) $value; // Default to string if no types match
     }
-
-    /**
-     * Register an event handler for a specific event.
-     *
-     * @param string $event The name of the event.
-     * @param callable $handler The handler function to be called when the event is emitted.
-     */
-    public function on(string $event, callable $handler): void
-    {
-        if (!isset($this->events[$event])) {
-            $this->events[$event] = [];
-        }
-        $this->events[$event][] = $handler;
-    }
-
-    /**
-     * Unregister an event handler for a specific event.
-     *
-     * @param string $event The name of the event.
-     * @param callable $handler The handler function to be removed.
-     */
-    public function off(string $event, callable $handler): void
-    {
-        if (isset($this->events[$event])) {
-            $index = array_search($handler, $this->events[$event], true);
-            if ($index !== false) {
-                unset($this->events[$event][$index]);
-            }
-        }
-    }
-
-    /**
-     * Emit an event, calling all registered handlers for that event.
-     *
-     * @param string $event The name of the event.
-     * @param mixed ...$args Any additional arguments to pass to the handlers.
-     */
-    public function emit(string $event, ...$args): void
-    {
-        if (isset($this->events[$event])) {
-            foreach ($this->events[$event] as $handler) {
-                call_user_func($handler, ...$args);
-            }
-        }
-    }
 }
