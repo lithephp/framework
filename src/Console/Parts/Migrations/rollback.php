@@ -1,5 +1,7 @@
 <?php
 
+use Lithe\Database\Manager as DB;
+
 function rollbackMigration($migration, \Symfony\Component\Console\Style\SymfonyStyle $io): bool
 {
     $path = $migration['migration'];
@@ -20,7 +22,7 @@ function rollbackMigration($migration, \Symfony\Component\Console\Style\SymfonyS
     }
 
     // Executa o método down da classe de migração e exclui o registro da migração
-    $migrationClass->down(DB_CONNECTION);
+    $migrationClass->down(DB::connection());
     Migration::delete($migration['id']);
 
     $io->writeln(sprintf("\r %s .......................................................................................... <info>DONE</info>", basename($path)));

@@ -1,6 +1,7 @@
 <?php
 
 use Lithe\Console\Line;
+use Lithe\Database\Manager as DB;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +15,7 @@ return Line::create(
         $io = new SymfonyStyle($input, $output);
 
         try {
-            Migration::init(\Lithe\Database\Manager::initialize('pdo'));
+            Migration::init(\Lithe\Database\Manager::initialize('pdo', true));
 
             // Create a custom style for the "INFO" message
             $outputStyle = new OutputFormatterStyle('white', 'blue');
@@ -103,7 +104,7 @@ function executeMigration(string $filePath, int $batch, SymfonyStyle $io): bool
         return false;
     }
 
-    $migrationClass->up(DB_CONNECTION);
+    $migrationClass->up(DB::connection());
 
     Migration::add($filePath, $batch);
 
