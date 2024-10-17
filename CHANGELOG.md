@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0] - Improvements to Routing System and Performance
+
+- **Description**: This version focuses on enhancing the routing system and the overall performance of the Lithe framework, making it even lighter and more efficient.
+- **Changes**:
+  - **Routing System Enhancements**:
+    - Implemented improvements in route management to optimize performance and reduce complexity.
+    - Removed event handling methods from the `App` class, simplifying the code structure.
+  - **Database Connection Access**:
+    - Removed direct access to the `DB_CONNECTION` constant. Now, the connection can be accessed through the new `connection()` method of the `Manager` class.
+  - **Force Database Initialization**:
+    - Modifications to ensure that the database initializes even if the environment variable `DB_SHOULD_INITIATE` is set to `false`.
+
 ## [1.0.2] - Refactor Router File Handling to be Case-Insensitive
 
 - **Description**: This version refactors the router's file handling to be case-insensitive, improving consistency and reliability when dealing with file paths.
