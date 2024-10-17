@@ -8,10 +8,12 @@ use RuntimeException;
 use Exception;
 use Lithe\Support\Env;
 use Lithe\Support\Log;
+use mysqli;
 
 class Manager
 {
     private static $settings = [];
+    private static $connection = null;
 
     // Constants for environment variable keys
     private const DB_CONNECTION_METHOD = 'DB_CONNECTION_METHOD';
@@ -85,11 +87,12 @@ class Manager
      * Initializes and returns the configured database connection.
      *
      * @param string|null $name The name of the database configuration to initialize.
+     * @param bool $initiate Whether to start the database connection even if the environment variable indicates otherwise.
      * @return mixed The result of the database connection initialization.
      * @throws RuntimeException If there is an error setting up the connection.
      * @throws Exception If the specified database configuration is not found.
      */
-    public static function initialize(string $name = null)
+    public static function initialize(string $name = null, bool $initiate = false)
     {
         try {
             $requiredEnvVariables = [
@@ -108,7 +111,7 @@ class Manager
                 }
             }
 
-            if (!filter_var(Env::get(self::DB_SHOULD_INITIATE), FILTER_VALIDATE_BOOLEAN)) {
+            if (!filter_var(Env::get(self::DB_SHOULD_INITIATE), FILTER_VALIDATE_BOOLEAN) && !$initiate) {
                 return null; // Return null if initialization is not required
             }
 
@@ -142,13 +145,44 @@ class Manager
         }
     }
 
+    /**
+     * Establishes and configures the database connection using the specified settings and configuration.
+     *
+     * This method retrieves the appropriate connection configuration by name and attempts to establish
+     * a connection to the database. If successful, the connection is stored for later use.
+     *
+     * @param string $name The name of the database connection to set up.
+     * @param object $dbConfig An object containing the database configuration parameters such as host,
+     *                         username, password, and database name.
+     * @param array $settings An associative array containing callable configuration functions for database connections.
+     * 
+     * @return mixed Returns the established database connection on success.
+     * 
+     * @throws RuntimeException If an error occurs while setting up the database connection.
+     */
     private static function setupConnection(string $name, object $dbConfig, array $settings)
     {
         try {
-            return $settings[$name]($dbConfig);
+            // Retrieve the connection using the specified settings
+            $connection = $settings[$name]($dbConfig);
+
+            // Store the connection for future use
+            self::$connection = $connection;
+
+            return $connection;
         } catch (Exception $e) {
             Log::error("Error setting up the '$name' connection: " . $e->getMessage());
             throw new RuntimeException('An error occurred while setting up the database connection: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Gets the current database connection instance.
+     *
+     * @return mixed|null The current database connection, or null if not initialized.
+     */
+    public static function connection()
+    {
+        return self::$connection;
     }
 }
