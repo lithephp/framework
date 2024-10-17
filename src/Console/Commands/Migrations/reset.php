@@ -16,7 +16,7 @@ return Line::create(
 
         try {
             // Initialize the Migration class with PDO connection
-            Migration::init(\Lithe\Database\Manager::initialize('pdo'));
+            Migration::init(\Lithe\Database\Manager::initialize('pdo', true));
         } catch (Exception $e) {
             // Output error message and return failure status
             $io->error($e->getMessage());
