@@ -92,3 +92,4 @@ Lithe is licensed under the [MIT License](https://opensource.org/licenses/MIT). 
 If you have any questions or need support, get in touch:
 
 - **Instagram**: [@lithephp](https://instagram.com/lithephp)
+- **Discord**: [Lithe](https://discord.gg/cQekmzAB)
