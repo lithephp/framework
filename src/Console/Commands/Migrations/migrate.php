@@ -15,7 +15,7 @@ return Line::create(
         $io = new SymfonyStyle($input, $output);
 
         try {
-            Migration::init(\Lithe\Database\Manager::initialize('pdo', true));
+            Migration::init(\Lithe\Database\Manager::initialize('pdo'));
 
             // Create a custom style for the "INFO" message
             $outputStyle = new OutputFormatterStyle('white', 'blue');
