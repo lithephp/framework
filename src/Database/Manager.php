@@ -87,12 +87,11 @@ class Manager
      * Initializes and returns the configured database connection.
      *
      * @param string|null $name The name of the database configuration to initialize.
-     * @param bool $initiate Whether to start the database connection even if the environment variable indicates otherwise.
      * @return mixed The result of the database connection initialization.
      * @throws RuntimeException If there is an error setting up the connection.
      * @throws Exception If the specified database configuration is not found.
      */
-    public static function initialize(string $name = null, bool $initiate = false)
+    public static function initialize(string $name = null)
     {
         try {
             $requiredEnvVariables = [
@@ -111,7 +110,7 @@ class Manager
                 }
             }
 
-            if (!filter_var(Env::get(self::DB_SHOULD_INITIATE), FILTER_VALIDATE_BOOLEAN) && !$initiate) {
+            if (!filter_var(Env::get(self::DB_SHOULD_INITIATE), FILTER_VALIDATE_BOOLEAN)) {
                 return null; // Return null if initialization is not required
             }
 
