@@ -8,12 +8,11 @@ use RuntimeException;
 use Exception;
 use Lithe\Support\Env;
 use Lithe\Support\Log;
-use mysqli;
 
 class Manager
 {
     private static $settings = [];
-    private static $connection = null;
+    private static $connection = [];
 
     // Constants for environment variable keys
     private const DB_CONNECTION_METHOD = 'DB_CONNECTION_METHOD';
@@ -166,7 +165,7 @@ class Manager
             $connection = $settings[$name]($dbConfig);
 
             // Store the connection for future use
-            self::$connection = $connection;
+            self::$connection[$name] = $connection;
 
             return $connection;
         } catch (Exception $e) {
@@ -176,12 +175,24 @@ class Manager
     }
 
     /**
-     * Gets the current database connection instance.
+     * Retrieves the current database connection instance based on the specified method.
      *
-     * @return mixed|null The current database connection, or null if not initialized.
+     * @param string|null $method The method to use for the database connection (e.g., 'pdo', 'mysqli').
+     * @return mixed|null The current database connection instance, or null if it is not initialized.
+     * @throws InvalidArgumentException If the specified connection method is not supported.
      */
-    public static function connection()
+    public static function connection(?string $method = null)
     {
-        return self::$connection;
+        // Se o método não for fornecido, pega o método da variável de ambiente
+        if ($method === null) {
+            $method = Env::get('DB_CONNECTION_METHOD');
+        }
+
+        // Verifica se o método de conexão está definido no ambiente
+        if (!isset(self::$connection[$method])) {
+            throw new \InvalidArgumentException("The connection method '{$method}' is not supported.");
+        }
+
+        return self::$connection[$method];
     }
 }
