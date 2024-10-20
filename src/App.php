@@ -27,7 +27,7 @@ class App extends \Lithe\Http\Router
      */
     private function getSettings(string $type = null, string $name = null, mixed $value = null): array
     {
-        $settings = import::file(__DIR__ . '/config/app/settings.php');
+        $settings = import::file(__DIR__ . '/Config/app/settings.php');
 
         // Set a specific configuration if all parameters are provided
         if ($type && $name && $value) {
