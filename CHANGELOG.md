@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.1] - Bug Fixes and Parameter Adjustments
+## [1.1.2] - Bug Fixes and Parameter Adjustments
 
 - **Description**: This version addresses minor bugs and makes adjustments to method parameter orders, improving the overall stability of the Lithe framework.
 - **Changes**:
