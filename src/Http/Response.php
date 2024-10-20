@@ -35,7 +35,7 @@ return new class($Settings, $Options) implements \Lithe\Http\Response
 
         // Check if the view engine is configured and callable
         if (isset($this->Settings['view engine'][$viewEngine]) && is_callable($this->Settings['view engine'][$viewEngine])) {
-            $this->Settings['view engine'][$viewEngine]($file, $data, $views);
+            $this->Settings['view engine'][$viewEngine]($file, $views, $data);
         } else {
             throw new \InvalidArgumentException("The view engine '$viewEngine' is not configured correctly.");
         }
