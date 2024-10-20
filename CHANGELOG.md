@@ -4,6 +4,8 @@
 
 - **Description**: This version addresses minor bugs and makes adjustments to method parameter orders, improving the overall stability of the Lithe framework.
 - **Changes**:
+  - **Fix case sensitivity issue for config path in App.php**:
+    - Resolved issues related to case sensitivity for configuration paths in the App.php file.
   - **Fixing the render method call in Response**:
     - Adjusted the parameter order in the render method to resolve compatibility issues.
   - **Adjusting the order of parameters and method calls in engines.php**:
