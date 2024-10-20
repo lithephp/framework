@@ -3,7 +3,7 @@
 use Lithe\Support\Log;
 
 return [
-    'blade' => function (string $file, ?array $data = [], string $views) {
+    'blade' => function (string $file, string $views, array $data = []) {
         // Check if Blade is available
         if (class_exists('Jenssegers\Blade\Blade')) {
             try {
@@ -26,7 +26,7 @@ return [
             throw new RuntimeException($errorMessage);
         }
     },
-    'twig' => function (string $file, ?array $data = [], string $views) {
+    'twig' => function (string $file, string $views, array $data = []) {
         // Check if Twig is available
         if (class_exists('Twig\Environment')) {
             try {
@@ -49,7 +49,7 @@ return [
             throw new RuntimeException($errorMessage);
         }
     },
-    'default' => function (string $file, ?array $data = [], string $views) {
+    'default' => function (string $file, string $views, array $data = []) {
         // Render using default PHP include
         $viewPath = $views . "/$file.php";
 
