@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1] - Bug Fixes and Parameter Adjustments
+
+- **Description**: This version addresses minor bugs and makes adjustments to method parameter orders, improving the overall stability of the Lithe framework.
+- **Changes**:
+  - **Fixing the render method call in Response**:
+    - Adjusted the parameter order in the render method to resolve compatibility issues.
+  - **Adjusting the order of parameters and method calls in engines.php**:
+    - Rearranged parameters in function calls to avoid deprecation warnings.
+
 ## [1.1.0] - Improvements to Routing System and Performance
 
 - **Description**: This version focuses on enhancing the routing system and the overall performance of the Lithe framework, making it even lighter and more efficient.
