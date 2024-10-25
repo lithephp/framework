@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4] - 2024-10-25
+
+### Changes
+- **Updated the getHost() and secure() functions**:
+  - Enhanced the `secure()` function to properly check for secure requests, including support for proxies.
+  - Modified the `getHost()` function to construct the host URL based on the secure request check.
+
 ## [1.1.3] - 2024-10-25
 
 ### Fixes
