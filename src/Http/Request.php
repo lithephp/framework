@@ -178,7 +178,8 @@ return new class($parameters, $url) implements \Lithe\Http\Request
      */
     function getHost(): string
     {
-        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
+        $isSecure = $this->secure();
+
         $scheme = $isSecure ? 'https://' : 'http://';
         $host = $_SERVER['HTTP_HOST'];
 
@@ -782,7 +783,9 @@ return new class($parameters, $url) implements \Lithe\Http\Request
      */
     public function secure(): bool
     {
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            $_SERVER['SERVER_PORT'] == 443 ||
+            (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');;
     }
 
     /**
