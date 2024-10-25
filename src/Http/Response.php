@@ -228,7 +228,7 @@ return new class($Settings, $Options) implements \Lithe\Http\Response
         $this->end();
     }
 
-    /**
+        /**
      * Sets a new cookie.
      *
      * @param string $name The name of the cookie.
@@ -266,13 +266,17 @@ return new class($Settings, $Options) implements \Lithe\Http\Response
         // Merge the provided options with the default options
         $options = array_merge($defaults, $options);
 
+        if (isset($options['expire']) && !is_int($options['expire'])) {
+            $options['expire'] = strtotime($options['expire']);
+        }
+
         // Check if headers have been sent
         if (headers_sent()) {
             throw new \RuntimeException('Cannot set cookie. Headers have already been sent.');
         }
 
         // Set the cookie
-        setcookie($name, (string)$value, $options);
+        setcookie($name, (string)$value, $options['expire'], $options['path'], $options['domain'], $options['secure'], $options['httponly']);
 
         return $this;
     }

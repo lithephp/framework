@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3] - 2024-10-25
+
+### Fixes
+- **cookie function**: 
+  - Fixed the validation for the `expire` option to ensure it is an integer.
+  - Enhanced handling of the `expire` parameter to convert string values to Unix timestamps when needed.
+  - Resolved an issue where setting cookies would throw a "option 'expire' is invalid" error.
+
+### Improvements
+- Improved error handling in the `cookie` function for better robustness.
+
+
 ## [1.1.2] - Bug Fixes and Parameter Adjustments
 
 - **Description**: This version addresses minor bugs and makes adjustments to method parameter orders, improving the overall stability of the Lithe framework.
