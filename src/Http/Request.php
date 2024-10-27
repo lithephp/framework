@@ -178,9 +178,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
      */
     function getHost(): string
     {
-        $isSecure = $this->secure();
-
-        $scheme = $isSecure ? 'https://' : 'http://';
+        $scheme = $this->protocol() . '://';
         $host = $_SERVER['HTTP_HOST'];
 
         return $scheme . $host;
