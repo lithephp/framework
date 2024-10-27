@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.5] - Input Method Enhancements and Query Parameter Handling
+
+- **Description**: This version introduces enhancements to the input handling in the Lithe , allowing for more flexible retrieval of request data from both the body and query parameters.
+- **Changes**:
+  - **Enhance input method to include query parameters**:
+    - Updated the `input` method to retrieve values from both the request body and query parameters, improving usability.
+  - **Improve migration file naming convention**:
+    - Updated migration file naming format to include the day for better organization: `YYYY_MM_DD_HHMMSS_name.php`.
+  - **Refactor getHost method to use protocol method**:
+    - Modified the `getHost` function to utilize the protocol method for determining the scheme, enhancing code readability.
+
 ## [1.1.4] - 2024-10-25
 
 ### Changes
