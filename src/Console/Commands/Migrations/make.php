@@ -153,7 +153,7 @@ PHP,
         // Generate the migration file content based on the selected template
         $content = $templates[$template];
         // Create a unique file name based on the current timestamp and migration name
-        $filePath = $path . date('Y') . "_" . date('m') . "_" . date('His') . '_' . $name . '.php';
+        $filePath = $path . date('Y') . "_" . date('m') . "_" . date('d') . "_" . date('His') . '_' . $name . '.php';
 
         // Write the content to the migration file
         file_put_contents($filePath, "<?php\n\n" . $content);
