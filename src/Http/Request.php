@@ -702,7 +702,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
     }
 
     /**
-     * Retrieves a specific input value from the request body.
+     * Retrieves a specific input value from the request body or query parameters.
      *
      * @param string $key The key of the input value to retrieve.
      * @param mixed $default The default value to return if the key does not exist.
@@ -712,6 +712,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
     {
         // Extract the body data
         $body = $this->extractBody();
+        $query = $this->extractQuery();
 
         // Check if $body is an array and the key exists
         if (is_array($body) && array_key_exists($key, $body)) {
@@ -721,6 +722,11 @@ return new class($parameters, $url) implements \Lithe\Http\Request
         // Check if $body is an object and the property exists
         if (is_object($body) && property_exists($body, $key)) {
             return $body->$key;
+        }
+
+        // Check if $query is an object and the property exists
+        if (is_object($query) && property_exists($query, $key)) {
+            return $query->$key;
         }
 
         // Return the default value if the key does not exist
