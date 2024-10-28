@@ -33,7 +33,7 @@ return Line::create(
         // Define available templates for the model
         $templates = [
             'default' => [
-                'use' => '',
+                'use' => 'use Lithe\Database\Manager as DB;',
                 'extends' => ''
             ],
             'eloquent' => [
