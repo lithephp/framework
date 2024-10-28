@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] - 2024-10-28
+
+### Added
+- **Create .env file for test configuration**: Added a `.env` file to facilitate test configuration.
+- **Add support for Seeder commands**: Implemented the structure to support seeder commands.
+- **Add make:seeder and db:seed commands**: New commands introduced for creating and executing seeders.
+
+### Modified
+- **Remove .env from .gitignore**: The `.env` file was removed from `.gitignore`, allowing its inclusion in the repository.
+- **Update Model generation templates**: Updates to model generation templates for better compatibility and organization.
+- **Refactor middleware template to use class-based definition**: Refactored middleware templates to utilize class-based definitions, improving code readability and structure.
+
 ## [1.1.5] - Input Method Enhancements and Query Parameter Handling
 
 - **Description**: This version introduces enhancements to the input handling in the Lithe , allowing for more flexible retrieval of request data from both the body and query parameters.
