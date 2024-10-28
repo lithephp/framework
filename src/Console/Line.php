@@ -44,6 +44,8 @@ class Line
             include __DIR__ . '/Commands/Migrations/refresh.php',
             include __DIR__ . '/Commands/Migrations/reset.php',
             include __DIR__ . '/Commands/Migrations/rollback.php',
+            include __DIR__ . '/Commands/Seeders/make.php',
+            include __DIR__ . '/Commands/Seeders/seed.php',
         ]);
     }
 
