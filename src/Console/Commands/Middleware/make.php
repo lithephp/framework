@@ -70,12 +70,39 @@ function generateMiddlewareContent($name)
     return <<<PHP
 <?php
 
+namespace App\Http\Middleware;
+
 use Lithe\Http\Request;
 use Lithe\Http\Response;
 
-define('{$name}', function (Request \$req, Response \$res, callable \$next)
+class {$name} 
 {
-    // Your middleware logic goes here
-});
+    /**
+     * Middleware constructor.
+     *
+     * Initializes any required middleware dependencies.
+     */
+    public function __construct()
+    {
+        // Initialize dependencies if needed
+    }
+
+    /**
+     * Handles the incoming HTTP request.
+     *
+     * Processes the request before passing it to the next middleware or
+     * returning a response.
+     *
+     * @param \Lithe\Http\Request \$req The HTTP request instance
+     * @param \Lithe\Http\Response \$res The HTTP response instance
+     * @param callable \$next The next middleware or controller in the chain
+     * @return mixed
+     */
+    public function __invoke(Request \$req, Response \$res, callable \$next): Response
+    {
+        // Middleware logic goes here
+    }
+}
+
 PHP;
 }
