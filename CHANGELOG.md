@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1] - 2024-10-31
+
+### Modified
+- **make:seeder command update**: Modified the `make:seeder` command to default to the environment connection method (`DB_CONNECTION_METHOD`) when no template option is specified.
+- **Template validation enhancement**: Improved validation to ensure that the specified template is valid before proceeding with file creation, providing a clearer error message if invalid.
+- **Enhanced feedback messages**: Updated the feedback messages for better user experience, confirming success or reporting errors when creating seeder files.
+
 ## [1.2.0] - 2024-10-28
 
 ### Added
