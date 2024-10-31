@@ -80,8 +80,17 @@ PHP,
             return Command::FAILURE;
         }
 
-        // Retrieve the 'template' option from the input or default to the environment variable
-        $template = $input->getOption('template') ?: Env::get('DB_CONNECTION_METHOD', 'default');
+        // Get the specified template option, if any
+        $template = $input->getOption('template');
+
+        // Retrieve the database connection method from environment variables
+        $db_connection_method = Env::get('DB_CONNECTION_METHOD', 'default');
+
+        // Use the specified database connection method as the template
+        if ($template === null) {
+            // If no template option is provided, use the environment method
+            $template = isset($templates[$db_connection_method]) ? $db_connection_method: 'default';
+        }
 
         // Check if the specified template is valid
         if (!isset($templates[$template])) {
@@ -105,7 +114,7 @@ PHP,
         file_put_contents($filePath, $content);
 
         // Output a success message indicating the seeder file was created
-        $io->writeln("\n\r<info-bg> INFO </info-bg>Seeder [$filePath] created successfully. You can now run it using your seeding logic.\n");
+        $io->writeln("\n\r<info-bg> INFO </info-bg> Seeder [$filePath] created successfully. You can now run it using your seeding logic.\n");
 
         return Command::SUCCESS;
     },
