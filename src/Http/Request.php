@@ -349,7 +349,6 @@ return new class($parameters, $url) implements \Lithe\Http\Request
             // Anonymous class to store query parameters dynamically
             $query = new class()
             {
-                private $data = [];
 
                 /**
                  * Magic method to retrieve query parameter values.
@@ -359,18 +358,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
                  */
                 public function __get($name)
                 {
-                    return $this->data[$name] ?? null;
-                }
-
-                /**
-                 * Magic method to set query parameter values.
-                 *
-                 * @param string $name The name of the query parameter.
-                 * @param mixed $value The value to set for the query parameter.
-                 */
-                public function __set($name, $value)
-                {
-                    $this->data[$name] = $value;
+                    return $this->$name ?? null;
                 }
             };
 
