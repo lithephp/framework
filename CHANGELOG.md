@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] - 2024-11-03
+
+### Modified
+- **Refactor query parameter handling**: Alterado para um método de acesso direto a propriedades usando `__get` para simplificar o acesso aos parâmetros de consulta.
+
 ## [1.2.1] - 2024-10-31
 
 ### Modified
