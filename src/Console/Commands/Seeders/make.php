@@ -83,19 +83,24 @@ PHP,
         // Get the specified template option, if any
         $template = $input->getOption('template');
 
-        // Retrieve the database connection method from environment variables
-        $db_connection_method = Env::get('DB_CONNECTION_METHOD', 'default');
+        if ($template) {
+            // Check if the template provided via input is valid
+            if (!isset($templates[$template])) {
+                $io->error('Invalid template');
+                return Command::FAILURE;
+            }
+        } else {
+            // Try to get the template from the environment variable
+            $DB_CONNECTION_METHOD = Env::get('DB_CONNECTION_METHOD', 'default');
 
-        // Use the specified database connection method as the template
-        if ($template === null) {
-            // If no template option is provided, use the environment method
-            $template = isset($templates[$db_connection_method]) ? $db_connection_method: 'default';
-        }
-
-        // Check if the specified template is valid
-        if (!isset($templates[$template])) {
-            $io->error('Invalid template. Available templates: ' . implode(', ', array_keys($templates)));
-            return Command::FAILURE;
+            // Check if the template from the environment variable is valid
+            if (!isset($templates[$DB_CONNECTION_METHOD])) {
+                // If the template is not valid, set 'default' as fallback
+                $template = 'default';
+            } else {
+                // Otherwise, use the template from the environment variable
+                $template = $DB_CONNECTION_METHOD;
+            }
         }
 
         // Define the path where seeder files will be stored
@@ -124,7 +129,7 @@ PHP,
             InputArgument::REQUIRED,
             'Seeder name'
         ],
-    ], 
+    ],
     [
         // Define the 'template' option for the command
         'template' => [null, InputOption::VALUE_REQUIRED, 'Template type', '']

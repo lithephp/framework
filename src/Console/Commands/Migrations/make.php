@@ -131,10 +131,24 @@ PHP,
         // Retrieve the 'template' option from the input or default to the environment variable
         $template = $input->getOption('template') ?: (Env::get('DB_CONNECTION_METHOD', 'default'));
 
-        // Check if the specified template is valid
-        if (!isset($templates[$template])) {
-            $io->error('Invalid template');
-            return Command::FAILURE;
+        if ($template) {
+            // Check if the template provided via input is valid
+            if (!isset($templates[$template])) {
+                $io->error('Invalid template');
+                return Command::FAILURE;
+            }
+        } else {
+            // Try to get the template from the environment variable
+            $DB_CONNECTION_METHOD = Env::get('DB_CONNECTION_METHOD', 'default');
+
+            // Check if the template from the environment variable is valid
+            if (!isset($templates[$DB_CONNECTION_METHOD])) {
+                // If the template is not valid, set 'default' as fallback
+                $template = 'default';
+            } else {
+                // Otherwise, use the template from the environment variable
+                $template = $DB_CONNECTION_METHOD;
+            }
         }
 
         // Ensure the migration name is provided
@@ -169,7 +183,7 @@ PHP,
             InputArgument::REQUIRED,
             'Migration name'
         ],
-    ], 
+    ],
     [
         // Define the 'template' option for the command
         'template' => [null, InputOption::VALUE_REQUIRED, 'Template type', '']

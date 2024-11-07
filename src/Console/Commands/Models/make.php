@@ -42,19 +42,24 @@ return Line::create(
             ],
         ];
 
-        // Retrieve the database connection method from environment variables
-        $db_connection_method = Env::get('DB_CONNECTION_METHOD', 'default');
+        if ($template) {
+            // Check if the template provided via input is valid
+            if (!isset($templates[$template])) {
+                $io->error('Invalid template');
+                return Command::FAILURE;
+            }
+        } else {
+            // Try to get the template from the environment variable
+            $DB_CONNECTION_METHOD = Env::get('DB_CONNECTION_METHOD', 'default');
 
-        // Use the specified database connection method as the template
-        if ($template === null) {
-            // If no template option is provided, use the environment method
-            $template = isset($templates[$db_connection_method]) ? $db_connection_method: 'default';
-        }
-
-        // Validate the specified template
-        if (!isset($templates[$template])) {
-            $io->error('Invalid template');
-            return Command::FAILURE;
+            // Check if the template from the environment variable is valid
+            if (!isset($templates[$DB_CONNECTION_METHOD])) {
+                // If the template is not valid, set 'default' as fallback
+                $template = 'default';
+            } else {
+                // Otherwise, use the template from the environment variable
+                $template = $DB_CONNECTION_METHOD;
+            }
         }
 
         // Verify and create the directory if it does not exist
