@@ -1,9 +1,19 @@
 # Changelog
 
+## [1.2.3] - 2024-11-07
+
+### Modified
+- **Adds template validation for make: migration, model, and seeders commands**: If the template configured in the environment variable does not exist, a default template is created automatically.
+
+- **Refactor of param and extractCookies methods**:
+    - **param**: Updated to handle URL-decoded values directly.
+    - **extractCookies**: Replaced the anonymous object with a class featuring dynamic properties, allowing direct access to cookie values through `__get`, `__set`, and an `exists` method for existence checks.
+    These improvements enhance the handling of parameters and cookies in the system.
+    
 ## [1.2.2] - 2024-11-03
 
 ### Modified
-- **Refactor query parameter handling**: Alterado para um método de acesso direto a propriedades usando `__get` para simplificar o acesso aos parâmetros de consulta.
+- **Refactor query parameter handling**: Changed to a direct property access method using `__get` to simplify access to query parameters.
 
 ## [1.2.1] - 2024-10-31
 
