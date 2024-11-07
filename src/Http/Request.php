@@ -1,6 +1,5 @@
 <?php
 
-use Lithe\Orbs\Orb;
 use Lithe\Support\Log;
 
 return new class($parameters, $url) implements \Lithe\Http\Request
@@ -193,7 +192,6 @@ return new class($parameters, $url) implements \Lithe\Http\Request
     {
         $cookies = new class
         {
-            private $values = [];
 
             /**
              * Get the value of a cookie.
@@ -203,18 +201,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
              */
             public function __get(string $name)
             {
-                return $this->values[$name] ?? null;
-            }
-
-            /**
-             * Set the value of a cookie.
-             *
-             * @param string $name The name of the cookie.
-             * @param mixed $value The value of the cookie.
-             */
-            public function __set(string $name, $value)
-            {
-                $this->values[$name] = $value;
+                return $this->$name ?? null;
             }
 
             /**
@@ -225,7 +212,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
              */
             public function exists(string $name): bool
             {
-                return isset($this->values[$name]);
+                return isset($this->$name);
             }
         };
 
@@ -465,6 +452,7 @@ return new class($parameters, $url) implements \Lithe\Http\Request
         } catch (\Exception $e) {
             // Error handling: log the error
             \error_log("Error extracting request body: " . $e->getMessage());
+            Log::error("Error extracting request body: " . $e->getMessage());
             return null;
         }
     }
@@ -802,8 +790,16 @@ return new class($parameters, $url) implements \Lithe\Http\Request
      */
     public function param(string $name, mixed $default = null): mixed
     {
-        // Check if the parameter exists and return its value; otherwise, return the default.
-        return $this->parameters->{$name} ?? $default;
+        // Retrieve the parameter value or default if it doesn't exist
+        $value = $this->parameters->{$name} ?? $default;
+
+        // If the value exists and is not null, URL-decode it
+        if ($value !== null) {
+            $value = urldecode($value);
+        }
+
+        // Return the value (it can be a string, int, float, boolean, etc.)
+        return $value;
     }
 
 
