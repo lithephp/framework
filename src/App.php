@@ -241,8 +241,8 @@ class App extends \Lithe\Http\Router
         // Otherwise, ensure the route starts with a forward slash, and replace directory separators with slashes
         $routeName = str_replace(DIRECTORY_SEPARATOR, '/', $routeName);
 
-        if ($routeName === '/index') {
-            $routeName = '/';
+        if (strpos($routeName, '/index') === 0) {
+            $routeName = substr($routeName, 7); 
         }
 
         try {
