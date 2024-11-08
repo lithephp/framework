@@ -2,6 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
+if (!defined('PROJECT_ROOT')) {
+    define('PROJECT_ROOT', __DIR__);
+}
+
 class AppTest extends TestCase
 {
     private \Lithe\App $app;
