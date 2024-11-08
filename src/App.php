@@ -245,8 +245,6 @@ class App extends \Lithe\Http\Router
             $routeName = '/';
         }
 
-        Log::info($routeName);
-
         try {
             $key = strtolower(str_replace('/', "\\", $file));
 
