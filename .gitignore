@@ -16,5 +16,5 @@ Thumbs.db
 # Ignore local configuration files
 .phpunit.result.cache
 
-# Lithe modules
-.lithe_modules/
+#Lithe Storage
+/storage
