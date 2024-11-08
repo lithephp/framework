@@ -3,18 +3,19 @@
 namespace Lithe;
 
 use Lithe\Exceptions\InvalidParameterTypeException;
+use Lithe\Orbis\Orbis;
 use Lithe\Support\import;
+use Lithe\Support\Log;
 
 /**
  * Main function that represents the application.
  */
 class App extends \Lithe\Http\Router
 {
-    private const ALLOWED_OPTIONS = ['view engine', 'views'];
+    private const ALLOWED_OPTIONS = ['view engine', 'views', 'routes'];
 
     private $Settings;
     private $HttpExceptions = [];
-    private array $events = [];
 
     /**
      * Handles application settings, optionally setting or retrieving specific configurations.
@@ -58,6 +59,7 @@ class App extends \Lithe\Http\Router
     private $Options = [
         "view engine" => "default",  // Sets the default view engine
         'views' => PROJECT_ROOT . '/views',  // Specifies the default directory for views
+        'routes' =>  '',
     ];
 
     /**
@@ -156,6 +158,125 @@ class App extends \Lithe\Http\Router
     }
 
     /**
+     * Loads and registers all route files from the specified routes directory.
+     * 
+     * This method scans the provided routes directory and includes any PHP files found.
+     * Each PHP file is expected to contain route definitions, which are then registered in the application.
+     */
+    public function loadRoutes()
+    {
+        // Get the routes directory from the application options
+        $routesDir = $this->Options['routes'];
+
+        // Check if the routes directory exists and is a valid directory
+        if (!is_dir($routesDir)) {
+            return; // If not, exit the function
+        }
+
+        // Recursively scan the directory for PHP files
+        $files = $this->scanDirectory($routesDir);
+
+        // Iterate over each file found in the directory
+        foreach ($files as $file) {
+            // Ensure the file is a PHP file
+            if (is_file($file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                // Register the route defined in the PHP file
+                $this->registerRouteFromFile($file);
+            }
+        }
+    }
+
+    /**
+     * Recursively scans a directory for PHP files, excluding '.' and '..' directories.
+     *
+     * This function takes a directory path, scans it for all files and subdirectories,
+     * and collects PHP files found in the directory and its subdirectories.
+     * 
+     * @param string|null $directory Path of the directory to scan. Can be null for invalid paths.
+     * @return array List of PHP file paths found within the directory and its subdirectories.
+     */
+    private function scanDirectory(?string $directory)
+    {
+        $files = [];  // Initialize an empty array to store PHP file paths
+
+        // Scan the directory for items, excluding '.' and '..'
+        $items = array_diff(scandir($directory), ['.', '..']);
+
+        // Iterate through each item found in the directory
+        foreach ($items as $item) {
+            // Generate the full path for the item (file or directory)
+            $path = "$directory/$item";
+
+            // If the item is a file and has a '.php' extension, add it to the files list
+            if (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'php') {
+                $files[] = $path;
+            }
+            // If the item is a directory, recursively scan it for PHP files
+            elseif (is_dir($path)) {
+                $files = array_merge($files, $this->scanDirectory($path));
+            }
+        }
+
+        // Return the list of PHP file paths
+        return $files;
+    }
+
+    /**
+     * Register a route from a file.
+     * 
+     * This function assumes each file contains its route definitions. It constructs a route
+     * name based on the file's path and registers it with the application. If an error occurs 
+     * during the registration, it logs the error message.
+     *
+     * @param string $file The route file to register
+     */
+    private function registerRouteFromFile(string $file)
+    {
+        // Define the base directory for the routes (it could be 'routes' or the folder you're using)
+        $routesDir = $this->Options['routes'];
+
+        // Calculate the route name by removing the base directory and file extension
+        $routeName = str_replace([$routesDir, '.php'], ['', ''], $file);
+
+        // Otherwise, ensure the route starts with a forward slash, and replace directory separators with slashes
+        $routeName = str_replace(DIRECTORY_SEPARATOR, '/', $routeName);
+
+        try {
+            $key = strtolower(str_replace('/', "\\", $file));
+
+            // Create or register the Router instance in the Orbis
+            Orbis::register(\Lithe\Http\Router::class, $key);
+
+            if (($router = require($file)) instanceof \Lithe\Http\Router) {
+                // Register the route by including the file and passing its contents to 'use'
+                $this->use($routeName, $router);
+                Orbis::instance($key, true);
+            } else {
+                // Register the route by including the file and passing its contents to 'use'
+                $this->use($routeName, $this->createRouterFromFile($key));
+            }
+        } catch (\Exception $e) {
+            // Log or handle errors if route registration fails
+            error_log("Error registering route from file {$file}: " . $e->getMessage());
+
+            // Log the error message using a custom logging service
+            Log::error("Error registering route from file {$file}: " . $e->getMessage());
+        }
+    }
+
+    // Function to create the router without including the file again
+    private function createRouterFromFile(string $key): \Lithe\Http\Router
+    {
+        // Checks if the file exists, but without trying to include it again
+        if (!file_exists($key)) {
+            throw new \Exception("Router configuration file not found: {$key}");
+        }
+
+        // Returns the router without including the file again
+        return Orbis::instance($key, true);
+    }
+
+    /**
      * Listens for incoming requests, processes them, and handles errors.
      *
      * @return void
@@ -164,6 +285,7 @@ class App extends \Lithe\Http\Router
     {
         // Initialize settings if not already set
         $this->Settings = $this->Settings ?? $this->getSettings();
+        $this->loadRoutes();
         // Match the request to a route
         $matchedRouteInfo = $this->findRouteAndParams();
 
@@ -191,7 +313,7 @@ class App extends \Lithe\Http\Router
             $this->sendErrorPage($response, $e->getStatusCode(), $e->getMessage());
         } catch (\Exception $e) {
             // Handle general exceptions
-            \Lithe\Support\Log::error($e);
+            \Lithe\Support\Log::error($e->getMessage());
             $this->handleHttpException(500, $request, $response, $e);
             $this->sendErrorPage($response, 500, 'Internal Server Error');
         }
