@@ -232,18 +232,21 @@ class App extends \Lithe\Http\Router
      */
     private function registerRouteFromFile(string $file)
     {
-        // Define the base directory for the routes (it could be 'routes' or the folder you're using)
+        // Define the base directory for the routes (could be 'routes' or another name you are using)
         $routesDir = $this->Options['routes'];
 
-        // Calculate the route name by removing the base directory and file extension
+        // Calculate the route name by removing the base directory and the file extension
         $routeName = str_replace([$routesDir, '.php'], ['', ''], $file);
 
-        // Otherwise, ensure the route starts with a forward slash, and replace directory separators with slashes
+        // Replace directory separators with the '/' character
         $routeName = str_replace(DIRECTORY_SEPARATOR, '/', $routeName);
 
-        if (strpos($routeName, '/index') === 0) {
-            $routeName = substr($routeName, 7); 
+        // Adjustment to map 'index.php' as the root '/'
+        if ($routeName === '/index') {
+            $routeName = '/';
         }
+
+        Log::info($routeName);
 
         try {
             $key = strtolower(str_replace('/', "\\", $file));
