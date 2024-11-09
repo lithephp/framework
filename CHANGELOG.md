@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.1] - 2024-11-09
+
+### Fixed
+- **Adjusted mapping for 'index.php' files in subdirectories**:
+    - Updated the logic to map 'index.php' in the root of the application to `/`:
+        - 'index.php' at the root is now mapped to `/`.
+        - 'subdir/index.php' is now mapped to `/subdir/index`, maintaining the subdirectory structure.
+
+## [1.3.0] - 2024-11-08
+
+### Modified
+- **Add support for defining route directories using the set method**:
+    - Implemented the `set` method to dynamically configure route directories, providing more flexibility in defining the base directory for routes.
+    - Refactored route loading logic to support configurable directories, simplifying customization of route sources.
+    - Improved route file inclusion to avoid redundancy, ensuring cleaner and more efficient route handling.
+    
 ## [1.2.3] - 2024-11-07
 
 ### Modified
