@@ -3,6 +3,7 @@
 namespace Lithe;
 
 use Lithe\Exceptions\InvalidParameterTypeException;
+use Lithe\Http\Router;
 use Lithe\Orbis\Orbis;
 use Lithe\Support\import;
 use Lithe\Support\Log;
@@ -246,8 +247,6 @@ class App extends \Lithe\Http\Router
             $routeName = '/';
         }
 
-        Log::info($routeName);
-
         try {
             $key = strtolower(str_replace('/', "\\", $file));
 
@@ -257,7 +256,7 @@ class App extends \Lithe\Http\Router
             if (($router = require($file)) instanceof \Lithe\Http\Router) {
                 // Register the route by including the file and passing its contents to 'use'
                 $this->use($routeName, $router);
-                Orbis::instance($key, true);
+                Orbis::unregister($key);
             } else {
                 // Register the route by including the file and passing its contents to 'use'
                 $this->use($routeName, $this->createRouterFromFile($key));
@@ -279,8 +278,14 @@ class App extends \Lithe\Http\Router
             throw new \Exception("Router configuration file not found: {$key}");
         }
 
+        $router = Orbis::instance($key, true);
+
+        if (!$router instanceof Router) {
+            throw new \Exception("Router not found");
+        }
+
         // Returns the router without including the file again
-        return Orbis::instance($key, true);
+        return $router;
     }
 
     /**
