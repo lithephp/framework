@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.2] - 2024-11-14
+
+### Fixed
+- **Corrected router instance check in the `any` function**:
+    - Updated the `any` function to properly verify if `$router` is an instance of `Router`.
+    - Adjusted the condition to throw an exception only when `$router` is not a valid `Router` instance.
+    - Improved error handling when the router instance is missing, increasing function reliability.
+
+### Refactored
+- **Enhanced route registration and creation with Orbis in the `Lithe\App` class**:
+    - Replaced `Orbis::instance` with `Orbis::unregister` when registering routes, ensuring the instance is discarded after use.
+    - Improved the `createRouterFromFile` method in the `Lithe\App` class to verify that the object returned from Orbis is an instance of `Router`.
+    - Added extra validations and error messages for missing or invalid router configuration files.
+    - Enhanced error handling and logging for cases where route registration fails.
+
 ## [1.3.1] - 2024-11-09
 
 ### Fixed
