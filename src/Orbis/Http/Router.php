@@ -184,9 +184,10 @@ function any(string $path, callable|array ...$handler): void
 
     $router = Orbis::instance($key);
 
-    if ($router instanceof Router) {
+    if (!$router instanceof Router) {
         throw new Exception("Router not found");
     }
+    
     $router->any($path, ...$handler); // Add the HEAD route to the router
 }
 
