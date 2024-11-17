@@ -98,11 +98,10 @@ class {$name}
      * @param callable \$next The next middleware or controller in the chain
      * @return mixed
      */
-    public function __invoke(Request \$req, Response \$res, callable \$next): Response
+    public function __invoke(Request \$req, Response \$res, callable \$next)
     {
         // Middleware logic goes here
     }
 }
-
 PHP;
 }
