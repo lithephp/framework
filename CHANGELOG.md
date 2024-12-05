@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.3] - 2024-12-05
+## [1.3.4] - 2024-12-05
 
 ### Fixed
 - **Fixed router system compatibility issue on Linux/Unix systems**:
