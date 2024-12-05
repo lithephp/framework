@@ -248,15 +248,15 @@ class App extends \Lithe\Http\Router
         }
 
         try {
-            $key = strtolower(str_replace('/', "\\", $file));
-
+            $key = strtolower(str_replace('/', DIRECTORY_SEPARATOR, $file));
+            
             // Create or register the Router instance in the Orbis
             Orbis::register(\Lithe\Http\Router::class, $key);
 
             if (($router = require($file)) instanceof \Lithe\Http\Router) {
                 // Register the route by including the file and passing its contents to 'use'
                 $this->use($routeName, $router);
-                Orbis::unregister($key);
+                exit;
             } else {
                 // Register the route by including the file and passing its contents to 'use'
                 $this->use($routeName, $this->createRouterFromFile($key));
@@ -273,11 +273,6 @@ class App extends \Lithe\Http\Router
     // Function to create the router without including the file again
     private function createRouterFromFile(string $key): \Lithe\Http\Router
     {
-        // Checks if the file exists, but without trying to include it again
-        if (!file_exists($key)) {
-            throw new \Exception("Router configuration file not found: {$key}");
-        }
-
         $router = Orbis::instance($key, true);
 
         if (!$router instanceof Router) {

@@ -200,17 +200,22 @@ function any(string $path, callable|array ...$handler): void
  */
 function router(string $path): \Lithe\Http\Router
 {
-    $key = strtolower(str_replace('/', "\\", $path) . '.php');
+    // Replace '/' with the correct directory separator and add '.php' at the end
+    $normalizedPath = str_replace('/', DIRECTORY_SEPARATOR, $path) . '.php';
+    
+    // Convert the path to lowercase for the registration key
+    $key = strtolower($normalizedPath);
+
     // Check if the file exists
-    if (!file_exists($key)) {
-        throw new \Exception("Router configuration file not found: {$path}");
+    if (!file_exists($normalizedPath)) {
+        throw new \Exception("Router configuration file not found: {$normalizedPath}");
     }
 
-    // Create or register the Router instance in the Orbis
-    Orbis::register(\Lithe\Http\Router::class, $key); // Register the instance using the path as the key
+    // Register the Router instance in Orbis
+    Orbis::register(\Lithe\Http\Router::class, $key);
 
     // Include the router configuration file
-    include_once $key;
+    include_once $normalizedPath;
 
     return Orbis::instance($key, true); // Return the Router instance
 }

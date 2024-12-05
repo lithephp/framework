@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3] - 2024-12-05
+
+### Fixed
+- **Fixed router system compatibility issue on Linux/Unix systems**:
+    - Resolved an issue where route handling was failing on Linux/Unix systems due to incorrect file formatting and path visibility issues.
+    - Adjusted file and directory permissions to ensure compatibility with Unix-based systems.
+    - Improved the handling of system-specific configurations, ensuring the router functions properly across all platforms.
+
 ## [1.3.2] - 2024-11-14
 
 ### Fixed
