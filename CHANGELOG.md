@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0] - 2025-1-09
+
+### Features
+- Automatic modular routing system implemented.
+- Support for hierarchical route mounting based on folder structure.
+- Middleware inheritance applied to child routes.
+- Enhanced scalability and code organization for routing.
+
+### Improvements
+- Simplified route management with automatic detection and setup.
+- Clear separation of parent and child routers for better modularity.
+
+Enjoy the new streamlined routing experience!
+
 ## [1.3.4] - 2024-12-05
 
 ### Fixed
