@@ -14,7 +14,8 @@
             "Lithe\\": "src/"
         },
         "files": [
-            "src/Orbis/Http/Router.php"
+            "src/Orbis/Http/Router.php",
+            "src/Orbis/helpers.php"
         ]
     },
     "require": {
