@@ -20,6 +20,30 @@ class Router
     protected array $middlewares = [];
 
     /**
+     * @var array Maps route names to their paths.
+     */
+    protected array $namedRoutes = [];
+
+    /**
+     * Adds a name to the most recently added route.
+     *
+     * @param string $name The name to assign to the route.
+     * @return self
+     * @throws \RuntimeException
+     */
+    public function name(string $name): self
+    {
+        // Ensure there is a route to name
+        $lastRoute = end($this->routes);
+        if (!$lastRoute) {
+            throw new \RuntimeException('No route available to name.');
+        }
+
+        $this->namedRoutes[$name] = $lastRoute['route'];
+        return $this;
+    }
+
+    /**
      * @var array List of HTTP methods supported by the router.
      */
     private const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'];

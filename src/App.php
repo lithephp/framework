@@ -3,7 +3,6 @@
 namespace Lithe;
 
 use Lithe\Exceptions\InvalidParameterTypeException;
-use Lithe\Http\Router;
 use Lithe\Orbis\Orbis;
 use Lithe\Support\import;
 use Lithe\Support\Log;
@@ -159,127 +158,161 @@ class App extends \Lithe\Http\Router
     }
 
     /**
-     * Loads and registers all route files from the specified routes directory.
-     * 
-     * This method scans the provided routes directory and includes any PHP files found.
-     * Each PHP file is expected to contain route definitions, which are then registered in the application.
+     * Método que inicia o carregamento das rotas e monta a hierarquia.
      */
     public function loadRoutes()
     {
-        // Get the routes directory from the application options
         $routesDir = $this->Options['routes'];
-
-        // Check if the routes directory exists and is a valid directory
         if (!is_dir($routesDir)) {
-            return; // If not, exit the function
+            return;
         }
 
-        // Recursively scan the directory for PHP files
+        // 1. Varre recursivamente o diretório e obtém todos os arquivos PHP
         $files = $this->scanDirectory($routesDir);
 
-        // Iterate over each file found in the directory
+        // 2. Para cada arquivo, calcula a rota correspondente e obtém o objeto Router
+        // A chave será a rota (ex.: '/', '/cart', '/cart/dest', etc)
+        $routers = [];
         foreach ($files as $file) {
-            // Ensure the file is a PHP file
-            if (is_file($file) && pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-                // Register the route defined in the PHP file
-                $this->registerRouteFromFile($file);
+            if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
+                continue;
             }
+            $routeName = $this->computeRouteName($file, $routesDir);
+            $router = $this->getRouterFromFile($file);
+            if ($router) {
+                $routers[$routeName] = $router;
+            }
+        }
+
+        // 3. Ordena os roteadores pela profundidade (rotas mais profundas primeiro)
+        uksort($routers, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        // 4. Percorre os roteadores e, se houver um pai para a rota atual, monta-o como sub-router
+        foreach ($routers as $routeName => $router) {
+            if ($routeName === '/' || $routeName === '') {
+                continue; // Rota raiz não tem pai
+            }
+            $parentRoute = $this->getParentRoute($routeName);
+            if ($parentRoute !== false && isset($routers[$parentRoute])) {
+                // Calcula o caminho relativo que será usado ao montar no pai.
+                $relative = substr($routeName, strlen($parentRoute));
+                if ($relative === false || $relative === '') {
+                    $relative = '/';
+                }
+                if ($relative[0] !== '/') {
+                    $relative = '/' . $relative;
+                }
+                // Monta o roteador filho no pai
+                $routers[$parentRoute]->use($relative, $router);
+                // Remove da lista de roteadores de nível superior, pois já está montado
+                unset($routers[$routeName]);
+            }
+        }
+
+        // 5. Por fim, monta os roteadores restantes (normalmente a raiz e outros de nível superior) na aplicação
+        foreach ($routers as $routeName => $router) {
+            $this->use($routeName, $router);
         }
     }
 
     /**
-     * Recursively scans a directory for PHP files, excluding '.' and '..' directories.
+     * Varre recursivamente um diretório em busca de arquivos PHP.
      *
-     * This function takes a directory path, scans it for all files and subdirectories,
-     * and collects PHP files found in the directory and its subdirectories.
-     * 
-     * @param string|null $directory Path of the directory to scan. Can be null for invalid paths.
-     * @return array List of PHP file paths found within the directory and its subdirectories.
+     * @param string $directory Diretório a ser escaneado.
+     * @return array Lista dos caminhos completos dos arquivos PHP.
      */
-    private function scanDirectory(?string $directory)
+    private function scanDirectory(string $directory): array
     {
-        $files = [];  // Initialize an empty array to store PHP file paths
-
-        // Scan the directory for items, excluding '.' and '..'
+        $files = [];
         $items = array_diff(scandir($directory), ['.', '..']);
-
-        // Iterate through each item found in the directory
         foreach ($items as $item) {
-            // Generate the full path for the item (file or directory)
             $path = "$directory/$item";
-
-            // If the item is a file and has a '.php' extension, add it to the files list
-            if (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'php') {
+            if (is_dir($path)) {
+                $files = array_merge($files, $this->scanDirectory($path));
+            } elseif (is_file($path) && pathinfo($path, PATHINFO_EXTENSION) === 'php') {
                 $files[] = $path;
             }
-            // If the item is a directory, recursively scan it for PHP files
-            elseif (is_dir($path)) {
-                $files = array_merge($files, $this->scanDirectory($path));
-            }
         }
-
-        // Return the list of PHP file paths
         return $files;
     }
 
     /**
-     * Register a route from a file.
-     * 
-     * This function assumes each file contains its route definitions. It constructs a route
-     * name based on the file's path and registers it with the application. If an error occurs 
-     * during the registration, it logs the error message.
+     * Calcula o nome da rota com base no caminho do arquivo.
+     * Remove o diretório base e a extensão, normalizando as barras.
      *
-     * @param string $file The route file to register
+     * @param string $file Caminho completo do arquivo.
+     * @param string $baseDir Diretório base das rotas.
+     * @return string Nome da rota (ex.: '/', '/cart', '/cart/dest').
      */
-    private function registerRouteFromFile(string $file)
+    private function computeRouteName(string $file, string $baseDir): string
     {
-        // Define the base directory for the routes (could be 'routes' or another name you are using)
-        $routesDir = $this->Options['routes'];
+        $route = str_replace([$baseDir, '.php'], '', $file);
+        $route = str_replace(DIRECTORY_SEPARATOR, '/', $route);
+        $route = rtrim($route, '/');
+        return $route === '' ? '/' : $route;
+    }
 
-        // Calculate the route name by removing the base directory and the file extension
-        $routeName = str_replace([$routesDir, '.php'], ['', ''], $file);
-
-        // Replace directory separators with the '/' character
-        $routeName = str_replace(DIRECTORY_SEPARATOR, '/', $routeName);
-
-        // Adjustment to map 'index.php' as the root '/'
-        if ($routeName === '/index') {
-            $routeName = '/';
+    /**
+     * Obtém o nome da rota pai com base na rota atual.
+     *
+     * Exemplo: para "/cart/dest", retorna "/cart".
+     *
+     * @param string $route Rota atual.
+     * @return mixed Rota pai ou false se não houver.
+     */
+    private function getParentRoute(string $route)
+    {
+        if ($route === '/' || $route === '') {
+            return false;
         }
+        $parts = explode('/', ltrim($route, '/'));
+        array_pop($parts);
+        $parent = '/' . implode('/', $parts);
+        return $parent === '' ? '/' : $parent;
+    }
 
+    /**
+     * Obtém o objeto Router a partir do arquivo.
+     *
+     * Tenta incluir o arquivo, que deve retornar uma instância de \Lithe\Http\Router,
+     * ou tenta recuperar uma instância já registrada.
+     *
+     * @param string $file Caminho do arquivo.
+     * @return \Lithe\Http\Router|null Retorna o objeto Router ou null em caso de erro.
+     */
+    private function getRouterFromFile(string $file): ?\Lithe\Http\Router
+    {
         try {
             $key = strtolower(str_replace('/', DIRECTORY_SEPARATOR, $file));
-            
-            // Create or register the Router instance in the Orbis
             Orbis::register(\Lithe\Http\Router::class, $key);
-
-            if (($router = require($file)) instanceof \Lithe\Http\Router) {
-                // Register the route by including the file and passing its contents to 'use'
-                $this->use($routeName, $router);
-                exit;
+            $router = require($file);
+            if ($router instanceof \Lithe\Http\Router) {
+                return $router;
             } else {
-                // Register the route by including the file and passing its contents to 'use'
-                $this->use($routeName, $this->createRouterFromFile($key));
+                return $this->createRouterFromFile($key);
             }
         } catch (\Exception $e) {
-            // Log or handle errors if route registration fails
-            error_log("Error registering route from file {$file}: " . $e->getMessage());
-
-            // Log the error message using a custom logging service
-            Log::error("Error registering route from file {$file}: " . $e->getMessage());
+            error_log("Erro ao registrar rota do arquivo {$file}: " . $e->getMessage());
+            Log::error("Erro ao registrar rota do arquivo {$file}: " . $e->getMessage());
+            return null;
         }
     }
 
-    // Function to create the router without including the file again
+    /**
+     * Cria ou recupera o Router a partir do container usando a chave informada.
+     *
+     * @param string $key Chave única baseada no caminho do arquivo.
+     * @return \Lithe\Http\Router
+     * @throws \Exception Caso não seja encontrado o Router.
+     */
     private function createRouterFromFile(string $key): \Lithe\Http\Router
     {
         $router = Orbis::instance($key, true);
-
-        if (!$router instanceof Router) {
-            throw new \Exception("Router not found");
+        if (!$router instanceof \Lithe\Http\Router) {
+            throw new \Exception("Router não encontrado para a chave {$key}");
         }
-
-        // Returns the router without including the file again
         return $router;
     }
 
@@ -301,6 +334,8 @@ class App extends \Lithe\Http\Router
         // Get the request and response objects
         $request = $this->Request($params, $this->url());
         $response = $this->Response();
+
+        Orbis::register($response, '\Lithe\Http\Response');
 
         try {
 
@@ -416,39 +451,62 @@ class App extends \Lithe\Http\Router
     }
 
     /**
-     * Runs the middleware stack.
+     * Executa a cadeia de middlewares.
      *
-     * @param array $middlewares The array of middleware functions.
-     * @param mixed $request The HTTP request object.
-     * @param mixed $response The HTTP response object.
-     * @param callable $next The callback to call after all middlewares have been processed.
-     * @return void
+     * @param array $middlewares Lista de middlewares.
+     * @param mixed $request Objeto ou dados da requisição.
+     * @param mixed $response Objeto ou dados da resposta.
+     * @param callable $next Callback a ser chamado ao final da cadeia.
      */
     protected function runMiddlewares($middlewares, $request, $response, $next)
     {
-        // Check if there are any middlewares to run
         if (empty($middlewares)) {
-            // If no middlewares, call the next callback
             $next();
             return;
         }
 
         $index = 0;
 
-        // Internal function to run the next middleware
+        // Função interna para chamar o próximo middleware
         $runNextMiddleware = function () use ($middlewares, $request, $response, &$index, $next, &$runNextMiddleware) {
             if ($index < count($middlewares)) {
                 $middleware = $middlewares[$index++];
 
-                // Call the current middleware with $request, $response, and $runNextMiddleware
+                // Se o middleware for um array no formato [controller, 'method']
+                if (is_array($middleware) && count($middleware) === 2) {
+                    [$controller, $method] = $middleware;
+
+                    if (is_string($controller)) {
+                        $refMethod = new \ReflectionMethod($controller, $method);
+                        if ($refMethod->isStatic()) {
+                            // Middleware estático
+                            $middleware = function ($req, $res, $next) use ($controller, $method) {
+                                $controller::$method($req, $res, $next);
+                            };
+                        } else {
+                            // Middleware não estático: instancia o controlador
+                            $instance = new $controller();
+                            $middleware = function ($req, $res, $next) use ($instance, $method) {
+                                $instance->$method($req, $res, $next);
+                            };
+                        }
+                    } elseif (is_object($controller)) {
+                        // Se já for uma instância, chama o método diretamente
+                        $middleware = function ($req, $res, $next) use ($controller, $method) {
+                            $controller->$method($req, $res, $next);
+                        };
+                    }
+                }
+
+                // Executa o middleware atual
                 $middleware($request, $response, $runNextMiddleware);
             } else {
-                // When all middlewares have been executed, call the next callback
+                // Quando todos os middlewares forem executados, chama o callback final
                 $next();
             }
         };
 
-        // Start executing the middlewares
+        // Inicia a execução dos middlewares
         $runNextMiddleware();
     }
 
