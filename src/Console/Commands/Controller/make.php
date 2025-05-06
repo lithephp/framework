@@ -21,7 +21,7 @@ return Line::create(
         // Get the controller name argument from the input
         $name = $input->getArgument('name');
         // Define the path for the new controller file
-        $controllerPath = PROJECT_ROOT . "/Http/Controllers/{$name}.php";
+        $controllerPath = PROJECT_ROOT . "/http/controllers/{$name}.php";
         // Define the directory for the new controller file
         $controllerDir = dirname($controllerPath);
 

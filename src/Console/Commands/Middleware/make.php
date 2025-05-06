@@ -22,7 +22,7 @@ return Line::create(
         // Get the middleware name argument from the input
         $name = $input->getArgument('name');
         // Define the path for the new middleware file
-        $middlewarePath = PROJECT_ROOT . "/Http/Middleware/{$name}.php";
+        $middlewarePath = PROJECT_ROOT . "/http/middleware/{$name}.php";
         // Define the directory for the new middleware file
         $middlewareDir = dirname($middlewarePath);
 
